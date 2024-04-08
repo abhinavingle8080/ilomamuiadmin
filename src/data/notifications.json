@@ -1,0 +1,20 @@
+[
+    {
+        "id": "1",
+        "title": "Your order is placed",
+        "description": "waiting for shipping",
+        "avatar": "avatar1",
+        "type": "order_placed",
+        "createdAt":"2023-02-14 12:00:00",
+        "isUnRead": true
+    },
+    {
+        "id": "2",
+        "title": "Your order is placed",
+        "description": "waiting for shipping",
+        "avatar": "avatar1",
+        "type": "order_placed",
+        "createdAt":"2023-02-14 12:00:00",
+        "isUnRead": true
+    }
+]

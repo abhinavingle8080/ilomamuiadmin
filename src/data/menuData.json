@@ -1,0 +1,94 @@
+[
+    {
+      "subheader": "general",
+      "items": [
+        {
+          "title": "dashboard",
+          "path": "/dashboard/main",
+          "icon": "/icons/ic_dashboard.svg"
+        },
+        {
+          "title": "profile",
+          "path": "/profile",
+          "icon": "/icons/ic_user.svg",
+          "children": [
+            {
+              "title": "roles",
+              "path": "/profile/roles"
+            },
+            {
+              "title": "edit profile",
+              "path": "/profile/edit-profile"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "subheader": "operations",
+      "items": [
+        {
+          "title": "Subscription",
+          "path": "/subscription",
+          "icon": "/icons/ic_cart.svg",
+          "children": [
+            {
+              "title": "Plans",
+              "path": "/subscription/plans"
+            },
+            {
+              "title": "Payment",
+              "path": "/subscription/payment"
+            },
+            {
+              "title": "Invoice",
+              "path": "/subscription/invoice"
+            },
+            {
+              "title": "History",
+              "path": "/subscription/history"
+            }
+          ]
+        },
+        {
+          "title": "Master",
+          "path": "/master",
+          "icon": "/icons/ic_kanban.svg",
+          "children": [
+            {
+              "title": "Exercises",
+              "path": "/master/excercises"
+            },
+            {
+              "title": "Learnings",
+              "path": "/master/learnings"
+            },
+            {
+              "title": "Levels",
+              "path": "/master/levels"
+            },
+            {
+              "title": "Grades",
+              "path": "/master/grades"
+            }
+          ]
+        }
+      ]
+    },
+    {
+        "subheader": "content management",
+        "items": [
+          {
+            "title": "page-content",
+            "path": "/page-content",
+            "icon": "/icons/ic_dashboard.svg"
+          },
+          {
+            "title": "constants",
+            "path": "/constants",
+            "icon": "/icons/ic_user.svg"
+          }
+        ]
+      }
+  ]
+  
