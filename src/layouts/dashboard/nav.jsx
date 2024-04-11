@@ -16,16 +16,18 @@ import { useResponsive } from 'src/hooks/use-responsive';
 
 import { account } from 'src/_mock/account';
 
-import Logo from 'src/components/logo';
+import Logo from 'src/components/Logo';
 import Scrollbar from 'src/components/scrollbar';
 
 import { NAV } from './config-layout';
+import useAuth from '../../hooks/useAuth';
 import navConfig from './config-navigation';
 
 // ----------------------------------------------------------------------
 
 export default function Nav({ openNav, onCloseNav }) {
   const pathname = usePathname();
+  const { user } = useAuth();
 
   const upLg = useResponsive('up', 'lg');
 
@@ -49,13 +51,13 @@ export default function Nav({ openNav, onCloseNav }) {
         bgcolor: (theme) => alpha(theme.palette.grey[500], 0.12),
       }}
     >
-      <Avatar src={account.photoURL} alt="photoURL" />
+      <Avatar src={ user?.profile_image ? user?.profile_image : account.photoURL} alt="photoURL" />
 
       <Box sx={{ ml: 2 }}>
-        <Typography variant="subtitle2">{account.displayName}</Typography>
+        <Typography variant="subtitle2">{`${user?.first_name} ${user?.last_name}`}</Typography>
 
         <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-          {account.role}
+          {user?.Role?.label}
         </Typography>
       </Box>
     </Box>

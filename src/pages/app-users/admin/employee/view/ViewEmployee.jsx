@@ -15,12 +15,12 @@ import useSettings from '../../../../../hooks/useSettings';
 
 // ----------------------------------------------------------------------
 
-ViewGrade.propTypes = {
+ViewEmployee.propTypes = {
     details: propTypes.object,
     logs: propTypes.array,
 };
 
-export default function ViewGrade({ details, logs }) {
+export default function ViewEmployee({ details, logs }) {
   const { themeStretch } = useSettings();
 
   const [currentTab, setCurrentTab] = useState('Employee Details');
@@ -34,7 +34,7 @@ export default function ViewGrade({ details, logs }) {
   ];
 
   return (
-    <Page title="View Grade">
+    <Page title="View Employee">
       <Card sx={{ mb: 3 }}>
       <Container maxWidth={themeStretch ? false : 'lg'}>
        

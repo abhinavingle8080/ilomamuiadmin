@@ -1,8 +1,13 @@
+import * as Yup from 'yup';
 import { useState } from 'react';
+// form
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
 
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
 import Card from '@mui/material/Card';
+import Alert from '@mui/material/Alert';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
@@ -11,32 +16,67 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import { alpha, useTheme } from '@mui/material/styles';
 import InputAdornment from '@mui/material/InputAdornment';
 
-import { useRouter } from 'src/routes/hooks';
-
 import { bgGradient } from 'src/theme/css';
 
-import Logo from 'src/components/logo';
+import Logo from 'src/components/Logo';
 import Iconify from 'src/components/iconify';
 
+import useAuth from '../../hooks/useAuth';
+import useIsMountedRef from '../../hooks/useIsMountedRef';
+import { RHFCheckbox, FormProvider, RHFTextField } from '../../components/hook-form';
 // ----------------------------------------------------------------------
 
 export default function LoginView() {
+  const { login } = useAuth();
+  const isMountedRef = useIsMountedRef();
   const theme = useTheme();
-
-  const router = useRouter();
 
   const [showPassword, setShowPassword] = useState(false);
 
-  const handleClick = () => {
-    router.push('/dashboard');
+  const LoginSchema = Yup.object().shape({
+    email: Yup.string().email('Email must be a valid email address').required('Email is required'),
+    password: Yup.string().required('Password is required'),
+  });
+  const defaultValues = {
+    email: '',
+    password: '',
+    remember: true,
+  };
+
+  const methods = useForm({
+    resolver: yupResolver(LoginSchema),
+    defaultValues,
+  });
+
+  const {
+    reset,
+    setError,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = methods;
+
+  const onSubmit = async (data) => {
+    try {
+      await login(data.email, data.password);
+    } catch (error) {
+      console.error(error?.response?.data?.message);
+      reset({ remember: true, email: data.email, password: '' });
+      if (isMountedRef.current) {
+        setError('afterSubmit', error);
+      }
+    }
   };
 
   const renderForm = (
-    <>
+    <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
       <Stack spacing={3}>
-        <TextField name="email" label="Email address" />
+        {!!errors.afterSubmit && (
+          <Alert severity="error">{errors?.afterSubmit?.response?.data?.message}</Alert>
+        )}
 
-        <TextField
+        <RHFTextField name="email" label="Email address" />
+
+        <RHFTextField
           name="password"
           label="Password"
           type={showPassword ? 'text' : 'password'}
@@ -52,10 +92,9 @@ export default function LoginView() {
         />
       </Stack>
 
-      <Stack direction="row" alignItems="center" justifyContent="flex-end" sx={{ my: 3 }}>
-        <Link variant="subtitle2" underline="hover">
-          Forgot password?
-        </Link>
+      <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ my: 2 }}>
+        <RHFCheckbox name="remember" label="Remember me" />
+        <Link variant="subtitle2">Forgot password?</Link>
       </Stack>
 
       <LoadingButton
@@ -64,11 +103,11 @@ export default function LoginView() {
         type="submit"
         variant="contained"
         color="inherit"
-        onClick={handleClick}
+        loading={isSubmitting}
       >
-        Login
+        Sign in
       </LoadingButton>
-    </>
+    </FormProvider>
   );
 
   return (
@@ -97,7 +136,9 @@ export default function LoginView() {
             maxWidth: 420,
           }}
         >
-          <Typography variant="h4" p={2}>Sign in ILoma Portal</Typography>
+          <Typography variant="h4" p={2}>
+            Sign in ILoma Portal
+          </Typography>
 
           {/* <Typography variant="body2" sx={{ mt: 2, mb: 5 }}>
             Don’t have an account?

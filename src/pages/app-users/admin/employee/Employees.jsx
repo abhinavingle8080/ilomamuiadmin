@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 
 // @mui
+import { useTheme } from '@mui/material/styles';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Table from '@mui/material/Table';
@@ -14,8 +15,10 @@ import Typography from '@mui/material/Typography';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
 
+import Swal from 'sweetalert2';
+
 // apis
-import { getEmployeesApi } from 'src/apis/employee/EmployeeApis';
+import { getEmployeesApi, deleteEmployeeApi } from 'src/apis/employee/EmployeeApis';
 
 // Components
 import Iconify from 'src/components/iconify';
@@ -31,6 +34,7 @@ import { emptyRows, applyFilter, getComparator } from '../../../../sections/user
 // ----------------------------------------------------------------------
 
 export default function Employees() {
+  const theme = useTheme();
   const [page, setPage] = useState(0);
 
   const [order, setOrder] = useState('asc');
@@ -55,18 +59,22 @@ export default function Employees() {
 
   useEffect(
     () => {
-      getEmployeesApi(payload)
-        .then((res) => {
-          setEmployees(res.data.data.rows);
-          setCount(res.data.data.count);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+      getEmployees(payload);
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [payload]
   );
+
+  const getEmployees = async (data) => {
+    getEmployeesApi(data)
+      .then((res) => {
+        setEmployees(res.data.data.rows);
+        setCount(res.data.data.count);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
 
   const handleSort = (event, id) => {
     const isAsc = orderBy === id && order === 'asc';
@@ -134,6 +142,36 @@ export default function Employees() {
     filterName: payload.search,
   });
 
+  const handleDelete = (id) => {
+    Swal.fire({
+      title: 'Are you sure?',
+      text: 'You will not be able to recover this Employee!',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, delete it!',
+      cancelButtonText: 'No, keep it',
+      cancelButtonColor: theme.palette.error.main,
+      confirmButtonColor: theme.palette.success.main,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        deleteEmployeeApi({ employee_id: id })
+          .then((res) => {
+            if (res?.data?.success) {
+              Swal.fire('Deleted!', res?.data?.message, 'success');
+              getEmployees(payload);
+            } else {
+              Swal.fire('Error!', res?.data?.message, 'error');
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      } else if (result.dismiss === Swal.DismissReason.cancel) {
+        Swal.fire('Cancelled', 'Your Employee is safe :)', 'error');
+      }
+    });
+  };
+
   const notFound = !dataFiltered.length && !payload.search;
 
   return (
@@ -148,14 +186,14 @@ export default function Employees() {
           ]}
         />
         <Button
-              variant="contained"
-              to="/employees/add"
-              component={RouterLink}
-              color="inherit"
-              startIcon={<Iconify icon="eva:plus-fill" />}
-            >
-              New Employee
-            </Button>
+          variant="contained"
+          to="/employees/add"
+          component={RouterLink}
+          color="inherit"
+          startIcon={<Iconify icon="eva:plus-fill" />}
+        >
+          New Employee
+        </Button>
       </Stack>
 
       <Card>
@@ -178,10 +216,10 @@ export default function Employees() {
                 headLabel={[
                   { id: 'name', label: 'Name' },
                   { id: 'email', label: 'Email' },
-                  { id: 'role', label: 'Role' },
+                  { id: 'designation', label: 'Designation' },
                   { id: 'joiningDate', label: 'Joining Date', align: 'center' },
                   { id: 'status', label: 'Status' },
-                  { id: '' },
+                  { id: 'action', label: 'Action', align: 'center' },
                 ]}
               />
               <TableBody>
@@ -191,16 +229,16 @@ export default function Employees() {
                     <UserTableRow
                       key={row.id}
                       name={`${row.first_name} ${row.last_name}`}
-                      role={row.role}
-                      status="Pending"
+                      designation={row.Designation.title}
+                      status={row.status}
                       email={row.email}
                       avatarUrl={row.avatarUrl}
                       joiningDate={moment(row.created_at).format('DD/MM/YYYY')}
                       selected={selected.indexOf(row.name) !== -1}
                       handleClick={(event) => handleClick(event, row.name)}
-                      onEdit='employees/edit'
-                      onView='employees/view'
-                      onDelete='employees/delete'
+                      onEdit={`/employees/${row.id}/edit`}
+                      onView={`/employees/${row.id}/view`}
+                      onDelete={() => handleDelete(row.id)}
                     />
                   ))}
 

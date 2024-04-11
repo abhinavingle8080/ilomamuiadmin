@@ -3,6 +3,21 @@ export const SELECT_STATUS = {
     Inactive: 'Inactive',
 };
 
+export const SELECT_EMPLOYMENT_STATUS = {
+    Permanent: 'Permanent',
+    Contract: 'Contract',
+    Temporary: 'Temporary',
+    Intern: 'Intern',
+    Training: 'Training',
+    Other : 'Other',
+}
+
+export const SELECT_GENDER = {
+    Male: 'Male',
+    Female: 'Female',
+    Other: 'Other',
+}
+
 export const SELECT_USER_STATUS = {
     Pending: 'Pending',
     Approved: 'Approved',

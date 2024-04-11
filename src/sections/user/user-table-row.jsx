@@ -22,7 +22,7 @@ export default function UserTableRow({
   name,
   avatarUrl,
   email,
-  role,
+  designation,
   joiningDate,
   status,
   handleClick,
@@ -58,13 +58,12 @@ export default function UserTableRow({
 
         <TableCell>{email}</TableCell>
 
-        <TableCell>Employee</TableCell>
-
+        <TableCell>{designation}</TableCell>
 
         <TableCell align="center">{joiningDate}</TableCell>
 
         <TableCell>
-          <Label color={(status === 'banned' && 'error') || 'success'}>{status}</Label>
+          <Label color={(status === 'Inactive' && 'error') || 'success'}>{status}</Label>
         </TableCell>
 
         <TableCell align="right">
@@ -97,7 +96,13 @@ export default function UserTableRow({
           </MenuItem>
         </Link>
 
-        <MenuItem onClick={handleCloseMenu} sx={{ color: 'error.main' }}>
+        <MenuItem
+          onClick={() => {
+            onDelete();
+            handleCloseMenu();
+          }}
+          sx={{ color: 'error.main' }}
+        >
           <Iconify icon="eva:trash-2-outline" sx={{ mr: 2 }} />
           Delete
         </MenuItem>
@@ -112,7 +117,7 @@ UserTableRow.propTypes = {
   handleClick: PropTypes.func,
   joiningDate: PropTypes.any,
   name: PropTypes.any,
-  role: PropTypes.any,
+  designation: PropTypes.any,
   selected: PropTypes.any,
   status: PropTypes.string,
   onView: PropTypes.func,

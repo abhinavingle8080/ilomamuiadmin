@@ -1,9 +1,10 @@
 import PropTypes from 'prop-types';
 import { useEffect,useReducer, createContext } from 'react';
 
+import { loginApi } from 'src/apis/auth/AuthApi';
+
 // utils
 import axios from '../utils/axios';
-import { loginApi } from '../apis/auth/AuthApi';
 import { getProfileApi } from '../apis/auth/ProfileApi';
 import { setSession, isValidToken } from '../utils/jwt';
 
@@ -67,6 +68,7 @@ AuthProvider.propTypes = {
 };
 
 function AuthProvider({ children }) {
+
     const [state, dispatch] = useReducer(reducer, initialState);
 
     useEffect(() => {
@@ -124,7 +126,6 @@ function AuthProvider({ children }) {
                 error.message = message;
                 throw error;
             };
-
             customError(response?.data?.message);
         }
 

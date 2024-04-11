@@ -1,4 +1,5 @@
 import React from 'react';
+import moment from 'moment';
 import propTypes from 'prop-types';
 
 import { Grid } from '@mui/material';
@@ -22,15 +23,43 @@ function EmployeeDetails({ data }) {
     const dummyData = [
         {
             label: 'Employee Name',
-            value: data?.first_name,
+            value: data ? `${data?.first_name} ${data?.last_name}` : 'N/A',
+        },
+        {
+            label: 'Designation',
+            value: data?.Designation?.title ? data?.Designation?.title : 'N/A',
         },
         {
             label: 'email',
-            value: data?.Levels?.map((item) => item?.level).join(', '),
+            value: data?.email ? data?.email : 'N/A',
+        },
+        {
+            label: 'Phone Number',
+            value: data?.phone_no ? `+${data?.country_code}-${data?.phone_no}` : 'N/A',
+        },
+        {
+            label: 'Gender',
+            value: data?.gender ? data?.gender : 'N/A',
+        },
+        {
+            label: 'Date of Birth',
+            value: data?.date_of_birth ? moment(data?.date_of_birth).format('DD/MM/YYYY') : 'N/A',
+        },
+        {
+            label: 'Employment Start Date',
+            value: data?.emp_start_date ? moment(data?.emp_start_date).format('DD/MM/YYYY') : 'N/A',
+        },
+        {
+            label: 'Employment End Date',
+            value: data?.emp_end_date ? moment(data?.emp_end_date).format('DD/MM/YYYY') : 'N/A',
+        },
+        {
+            label: 'Address',
+            value: data?.address ? data?.address : 'N/A',
         },
         {
             label: 'Status',
-            value: data?.status,
+            value: data?.status ? data?.status : 'N/A',
         },
     ];
 

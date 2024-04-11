@@ -9,10 +9,6 @@ export const getEmployeeApi = (data) => {
     return postMethod('/superadmin/get-employee', data);
 };
 
-export const getEmployeesExportApi = (data) => {
-    return postMethod('/superadmin/employee/download', data);
-};
-
 export const createEmployeeApi = (data) => {
     return postMethod('/superadmin/create-employee', data);
 };
