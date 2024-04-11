@@ -20,11 +20,9 @@ import Iconify from 'src/components/iconify';
 export default function UserTableRow({
   selected,
   name,
+  date,
+  description,
   avatarUrl,
-  email,
-  role,
-  joiningDate,
-  status,
   handleClick,
   onDelete,
   onView,
@@ -55,24 +53,23 @@ export default function UserTableRow({
             </Typography>
           </Stack>
         </TableCell>
-
-        <TableCell>{email}</TableCell>
-
-        <TableCell>Employee</TableCell>
-
-
-        <TableCell align="center">{joiningDate}</TableCell>
-
-        <TableCell>
-          <Label color={(status === 'banned' && 'error') || 'success'}>{status}</Label>
-        </TableCell>
-
+        <TableCell>{date}</TableCell>
+        <TableCell>{description}</TableCell>
+        
         <TableCell align="right">
           <IconButton onClick={handleOpenMenu}>
             <Iconify icon="eva:more-vertical-fill" />
           </IconButton>
         </TableCell>
       </TableRow>
+        {/* <TableCell>{description}</TableCell> */}
+
+
+
+        {/* <TableCell>
+          <Label color={(status === 'banned' && 'error') || 'success'}>{status}</Label>
+        </TableCell> */}
+
 
       <Popover
         open={!!open}
@@ -108,13 +105,11 @@ export default function UserTableRow({
 
 UserTableRow.propTypes = {
   avatarUrl: PropTypes.any,
-  email: PropTypes.any,
   handleClick: PropTypes.func,
-  joiningDate: PropTypes.any,
   name: PropTypes.any,
-  role: PropTypes.any,
+  date: PropTypes.any,
+  description: PropTypes.any,
   selected: PropTypes.any,
-  status: PropTypes.string,
   onView: PropTypes.func,
   onEdit: PropTypes.func,
   onDelete: PropTypes.func,

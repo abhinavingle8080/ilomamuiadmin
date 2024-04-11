@@ -1,9 +1,5 @@
-// library
-import moment from 'moment';
-import { useState, useEffect } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
+import { useState } from 'react';
 
-// @mui
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Table from '@mui/material/Table';
@@ -14,23 +10,21 @@ import Typography from '@mui/material/Typography';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
 
-// apis
-import { getEmployeesApi } from 'src/apis/employee/EmployeeApis';
+import { users } from 'src/_mock/user';
 
-// Components
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 
-import TableNoData from '../../../../sections/user/table-no-data';
-import UserTableRow from '../../../../sections/user/user-table-row';
-import UserTableHead from '../../../../sections/user/user-table-head';
-import TableEmptyRows from '../../../../sections/user/table-empty-rows';
-import HeaderBreadcrumbs from '../../../../components/HeaderBreadcrumbs';
-import UserTableToolbar from '../../../../sections/user/user-table-toolbar';
-import { emptyRows, applyFilter, getComparator } from '../../../../sections/user/utils';
+import TableNoData from '../table-no-data';
+import UserTableRow from '../user-table-row';
+import UserTableHead from '../user-table-head';
+import TableEmptyRows from '../table-empty-rows';
+import UserTableToolbar from '../user-table-toolbar';
+import { emptyRows, applyFilter, getComparator } from '../utils';
+
 // ----------------------------------------------------------------------
 
-export default function Employees() {
+export default function UserPage() {
   const [page, setPage] = useState(0);
 
   const [order, setOrder] = useState('asc');
@@ -43,31 +37,6 @@ export default function Employees() {
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
-  const [count, setCount] = useState(0);
-
-  const [employees, setEmployees] = useState([]);
-
-  const [payload, setPayload] = useState({
-    page: 1,
-    limit: 5,
-    search: '',
-  });
-
-  useEffect(
-    () => {
-      getEmployeesApi(payload)
-        .then((res) => {
-          setEmployees(res.data.data.rows);
-          setCount(res.data.data.count);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [payload]
-  );
-
   const handleSort = (event, id) => {
     const isAsc = orderBy === id && order === 'asc';
     if (id !== '') {
@@ -78,7 +47,7 @@ export default function Employees() {
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelecteds = employees.map((n) => n.name);
+      const newSelecteds = users.map((n) => n.name);
       setSelected(newSelecteds);
       return;
     }
@@ -104,64 +73,41 @@ export default function Employees() {
   };
 
   const handleChangePage = (event, newPage) => {
-    setPayload({
-      ...payload,
-      page: newPage + 1,
-    });
     setPage(newPage);
   };
 
   const handleChangeRowsPerPage = (event) => {
     setPage(0);
     setRowsPerPage(parseInt(event.target.value, 10));
-    setPayload({
-      ...payload,
-      limit: parseInt(event.target.value, 10),
-    });
   };
 
   const handleFilterByName = (event) => {
-    setPayload({
-      ...payload,
-      page: 1,
-      search: event.target.value,
-    });
+    setPage(0);
+    setFilterName(event.target.value);
   };
 
   const dataFiltered = applyFilter({
-    inputData: employees,
+    inputData: users,
     comparator: getComparator(order, orderBy),
-    filterName: payload.search,
+    filterName,
   });
 
-  const notFound = !dataFiltered.length && !payload.search;
+  const notFound = !dataFiltered.length && !!filterName;
 
   return (
     <Container>
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
-        <HeaderBreadcrumbs
-          heading="Employee"
-          links={[
-            { name: 'Dashboard', href: '/dashboard' },
-            { name: 'Employee', href: '/employees' },
-            { name: 'Employee List' },
-          ]}
-        />
-        <Button
-              variant="contained"
-              to="/employees/add"
-              component={RouterLink}
-              color="inherit"
-              startIcon={<Iconify icon="eva:plus-fill" />}
-            >
-              New Employee
-            </Button>
+        <Typography variant="h4">Users</Typography>
+
+        <Button variant="contained" color="inherit" startIcon={<Iconify icon="eva:plus-fill" />}>
+          New User
+        </Button>
       </Stack>
 
       <Card>
         <UserTableToolbar
           numSelected={selected.length}
-          filterName={payload.search}
+          filterName={filterName}
           onFilterName={handleFilterByName}
         />
 
@@ -171,42 +117,37 @@ export default function Employees() {
               <UserTableHead
                 order={order}
                 orderBy={orderBy}
-                rowCount={count}
+                rowCount={users.length}
                 numSelected={selected.length}
                 onRequestSort={handleSort}
                 onSelectAllClick={handleSelectAllClick}
                 headLabel={[
                   { id: 'name', label: 'Name' },
-                  { id: 'email', label: 'Email' },
-                  { id: 'role', label: 'Role' },
-                  { id: 'joiningDate', label: 'Joining Date', align: 'center' },
-                  { id: 'status', label: 'Status' },
+                  { id: 'date', label: 'Date' },
+                  {id:'description', label:'Description'},
                   { id: '' },
                 ]}
               />
               <TableBody>
                 {dataFiltered
-                  // .slice((payload.page - 1) * rowsPerPage, (payload.page - 1) * rowsPerPage + rowsPerPage)
+                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((row) => (
                     <UserTableRow
                       key={row.id}
-                      name={`${row.first_name} ${row.last_name}`}
-                      role={row.role}
-                      status="Pending"
-                      email={row.email}
+                      name={row.name}
+                      date={row.date}
+                      description={row.description}
+                      // company={row.company}
                       avatarUrl={row.avatarUrl}
-                      joiningDate={moment(row.created_at).format('DD/MM/YYYY')}
+                      isVerified={row.isVerified}
                       selected={selected.indexOf(row.name) !== -1}
                       handleClick={(event) => handleClick(event, row.name)}
-                      onEdit='employees/edit:id'
-                      onView='employees/view'
-                      onDelete='employees/delete'
                     />
                   ))}
 
                 <TableEmptyRows
                   height={77}
-                  emptyRows={emptyRows(payload.page - 1, rowsPerPage, count)}
+                  emptyRows={emptyRows(page, rowsPerPage, users.length)}
                 />
 
                 {notFound && <TableNoData query={filterName} />}
@@ -216,9 +157,9 @@ export default function Employees() {
         </Scrollbar>
 
         <TablePagination
-          page={payload.page - 1}
+          page={page}
           component="div"
-          count={count}
+          count={users.length}
           rowsPerPage={rowsPerPage}
           onPageChange={handleChangePage}
           rowsPerPageOptions={[5, 10, 25]}

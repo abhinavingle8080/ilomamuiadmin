@@ -11,6 +11,9 @@ export const LoginPage = lazy(() => import('src/pages/login'));
 export const ProductsPage = lazy(() => import('src/pages/products'));
 export const Page404 = lazy(() => import('src/pages/page-not-found'));
 
+export const Holiday = lazy(() => import('src/pages/app-users/admin/holiday/Holiday'));
+export const HolidayOperation = lazy(() => import('src/pages/app-users/admin/holiday/HolidayOperation'));
+
 // ----------------------------------------------------------------------
 
 export default function Router() {
@@ -31,7 +34,13 @@ export default function Router() {
           { path: ':id/edit', element: <EmployeeOperation /> },
           { path: 'add', element: <EmployeeOperation /> },
         ]},
-        { path: 'holidays', element: <ProductsPage /> },
+        { path: 'holidays', children: [
+          { path: '', element: <Holiday /> },
+          { path: ':id/view', element: <HolidayOperation /> },
+          { path: ':id/edit', element: <HolidayOperation /> },
+          { path: 'add', element: <HolidayOperation /> },
+        ]},
+
         { path: 'leaves', element: <BlogPage /> },
       ],
     },

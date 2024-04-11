@@ -21,16 +21,16 @@ EmployeeDetails.propTypes = {
 function EmployeeDetails({ data }) {
     const dummyData = [
         {
-            label: 'Employee Name',
-            value: data?.first_name,
+            label: 'Holiday Name',
+            value: data?.name,
         },
         {
-            label: 'email',
+            label: 'date',
             value: data?.Levels?.map((item) => item?.level).join(', '),
         },
         {
-            label: 'Status',
-            value: data?.status,
+            label: 'duration',
+            value: data?.duration,
         },
     ];
 

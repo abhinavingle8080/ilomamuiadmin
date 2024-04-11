@@ -1,23 +1,16 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams, useLocation } from 'react-router-dom';
 
-// @mui
 import { Container } from '@mui/material';
 
-// sections
-import EmployeeForm from './EmployeeForm';
-import ViewEmployee from './view/ViewEmployee';
-// components
+import HolidayForm from './HolidayForm';
+import ViewHoliday from './view/ViewHoliday';
 import Page from '../../../../components/Page';
-// hooks
 import useSettings from '../../../../hooks/useSettings';
-import { getEmployeeApi } from '../../../../apis/employee/EmployeeApis';
+import { getHolidayApi } from '../../../../apis/holiday/HolidayApis';
 import HeaderBreadcrumbs from '../../../../components/HeaderBreadcrumbs';
 
-
-// ----------------------------------------------------------------------
-
-export default function EmployeeOperation() {
+export default function HolidayOperation() {
   const { themeStretch } = useSettings();
   const { pathname } = useLocation();
   const { id = '' } = useParams();
@@ -27,8 +20,8 @@ export default function EmployeeOperation() {
 
   let name;
   let heading;
-  const mainTitle = 'Employees';
-  const title = 'Employee';
+  const mainTitle = 'Holidays';
+  const title = 'Holiday';
 
   if (isEdit) {
     name = 'Update';
@@ -41,9 +34,9 @@ export default function EmployeeOperation() {
     heading = `Create ${title}`;
   }
 
-  const getEmployee = (employeeId) => {
+  const getHoliday = useCallback((holidayId) => {
     if (isEdit || isView) {
-      getEmployeeApi({ employee_id: employeeId })
+      getHolidayApi({ holiday_id: holidayId })
         .then((res) => {
           setData(res?.data?.data);
         })
@@ -51,32 +44,28 @@ export default function EmployeeOperation() {
           console.log(err);
         });
     }
-  };
+  }, [isEdit, isView]);
 
-  useEffect(
-    () => {
-      getEmployee(id);
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [id]
-  );
+  useEffect(() => {
+    getHoliday(id);
+  }, [ id , getHoliday]);
 
   return (
-    <Page title={`${name} Employee`}>
+    <Page title={`${name} ${title}`}>
       <Container maxWidth={themeStretch ? false : 'lg'}>
         <HeaderBreadcrumbs
           heading={heading}
           links={[
             { name: 'Dashboard', href: '/' },
-            { name: `${mainTitle}`, href: '/employees' },
+            { name: `${mainTitle}`, href: '/holidays' },
             { name: `${name} ${title}` },
           ]}
         />
 
         {isView ? (
-          <ViewEmployee details={data} logs={data} />
+          <ViewHoliday details={data} />
         ) : (
-          <EmployeeForm isEdit={isEdit} data={data} />
+          <HolidayForm isEdit={isEdit} data={data} />
         )}
       </Container>
     </Page>

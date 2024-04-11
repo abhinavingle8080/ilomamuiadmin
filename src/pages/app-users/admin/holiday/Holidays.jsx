@@ -14,59 +14,47 @@ import Typography from '@mui/material/Typography';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
 
-// apis
-import { getEmployeesApi } from 'src/apis/employee/EmployeeApis';
+// apis - assuming you have a similar API function for getting holidays
+import { getHolidaysApi ,deleteHolidayApi  } from 'src/apis/holiday/HolidayApis';
 
 // Components
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 
-import TableNoData from '../../../../sections/user/table-no-data';
-import UserTableRow from '../../../../sections/user/user-table-row';
-import UserTableHead from '../../../../sections/user/user-table-head';
-import TableEmptyRows from '../../../../sections/user/table-empty-rows';
+import TableNoData from '../../../../sections/products/table-no-data';
 import HeaderBreadcrumbs from '../../../../components/HeaderBreadcrumbs';
-import UserTableToolbar from '../../../../sections/user/user-table-toolbar';
+import HolidayTableRow from '../../../../sections/products/user-table-row';
+import TableEmptyRows from '../../../../sections/products/table-empty-rows';
+import HolidayTableHead from '../../../../sections/products/user-table-head';
+import HolidayTableToolbar from '../../../../sections/products/user-table-toolbar';
 import { emptyRows, applyFilter, getComparator } from '../../../../sections/user/utils';
 // ----------------------------------------------------------------------
 
-export default function Employees() {
+export default function Holidays() {
   const [page, setPage] = useState(0);
-
   const [order, setOrder] = useState('asc');
-
   const [selected, setSelected] = useState([]);
-
-  const [orderBy, setOrderBy] = useState('name');
-
+  const [orderBy, setOrderBy] = useState('date');
   const [filterName, setFilterName] = useState('');
-
   const [rowsPerPage, setRowsPerPage] = useState(5);
-
   const [count, setCount] = useState(0);
-
-  const [employees, setEmployees] = useState([]);
-
+  const [holidays, setHolidays] = useState([]);
   const [payload, setPayload] = useState({
     page: 1,
     limit: 5,
     search: '',
   });
 
-  useEffect(
-    () => {
-      getEmployeesApi(payload)
-        .then((res) => {
-          setEmployees(res.data.data.rows);
-          setCount(res.data.data.count);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [payload]
-  );
+  useEffect(() => {
+    getHolidaysApi(payload)
+      .then((res) => {
+        setHolidays(res.data.data.rows);
+        setCount(res.data.data.count);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, [payload]);
 
   const handleSort = (event, id) => {
     const isAsc = orderBy === id && order === 'asc';
@@ -78,7 +66,7 @@ export default function Employees() {
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelecteds = employees.map((n) => n.name);
+      const newSelecteds = holidays.map((holiday) => holiday.name);
       setSelected(newSelecteds);
       return;
     }
@@ -124,42 +112,55 @@ export default function Employees() {
     setPayload({
       ...payload,
       page: 1,
+      // limit: 5,
       search: event.target.value,
     });
   };
-
   const dataFiltered = applyFilter({
-    inputData: employees,
+    inputData: holidays,
     comparator: getComparator(order, orderBy),
     filterName: payload.search,
   });
 
   const notFound = !dataFiltered.length && !payload.search;
 
+
+  const handleDelete = (id) => {
+    console.log('Deleting holiday with ID:', id);
+    deleteHolidayApi(id)
+      .then(() => {
+        setHolidays(holidays.filter((holiday) => holiday.id !== id));
+      })
+      .catch((error) => {
+        console.error('Error deleting holiday:', error);
+      });
+  };
+  
+
   return (
     <Container>
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
         <HeaderBreadcrumbs
-          heading="Employee"
+          heading="Holiday"
           links={[
             { name: 'Dashboard', href: '/dashboard' },
-            { name: 'Employee', href: '/employees' },
-            { name: 'Employee List' },
+            { name: 'Holidays', href: '/holidays' },
+            { name: 'Holiday List' },
           ]}
         />
         <Button
-              variant="contained"
-              to="/employees/add"
-              component={RouterLink}
-              color="inherit"
-              startIcon={<Iconify icon="eva:plus-fill" />}
-            >
-              New Employee
-            </Button>
+          variant="contained"
+          to="/holidays/add"
+          component={RouterLink}
+          color="inherit"
+          startIcon={<Iconify icon="eva:plus-fill" />}
+        >
+          New Holiday
+        </Button>
       </Stack>
 
       <Card>
-        <UserTableToolbar
+        <HolidayTableToolbar
           numSelected={selected.length}
           filterName={payload.search}
           onFilterName={handleFilterByName}
@@ -168,7 +169,7 @@ export default function Employees() {
         <Scrollbar>
           <TableContainer sx={{ overflow: 'unset' }}>
             <Table sx={{ minWidth: 800 }}>
-              <UserTableHead
+              <HolidayTableHead
                 order={order}
                 orderBy={orderBy}
                 rowCount={count}
@@ -177,32 +178,24 @@ export default function Employees() {
                 onSelectAllClick={handleSelectAllClick}
                 headLabel={[
                   { id: 'name', label: 'Name' },
-                  { id: 'email', label: 'Email' },
-                  { id: 'role', label: 'Role' },
-                  { id: 'joiningDate', label: 'Joining Date', align: 'center' },
-                  { id: 'status', label: 'Status' },
-                  { id: '' },
+                  { id: 'date', label: 'Date' },
+                  { id: 'description', label: 'Description' },
                 ]}
               />
               <TableBody>
-                {dataFiltered
-                  // .slice((payload.page - 1) * rowsPerPage, (payload.page - 1) * rowsPerPage + rowsPerPage)
-                  .map((row) => (
-                    <UserTableRow
-                      key={row.id}
-                      name={`${row.first_name} ${row.last_name}`}
-                      role={row.role}
-                      status="Pending"
-                      email={row.email}
-                      avatarUrl={row.avatarUrl}
-                      joiningDate={moment(row.created_at).format('DD/MM/YYYY')}
-                      selected={selected.indexOf(row.name) !== -1}
-                      handleClick={(event) => handleClick(event, row.name)}
-                      onEdit='employees/edit:id'
-                      onView='employees/view'
-                      onDelete='employees/delete'
-                    />
-                  ))}
+                {dataFiltered.map((holiday) => (
+                  <HolidayTableRow
+                  // key={holiday.id}
+                  name={holiday.name}
+                    date={moment(holiday.date).format('DD/MM/YYYY')}
+                    description={holiday.description}
+                    selected={selected.indexOf(holiday.name) !== -1}
+                    handleClick={(event) => handleClick(event, holiday.name)}
+                    onEdit={`/holidays/${holiday.id}/edit`}
+                    onView={`/holidays/${holiday.id}/view`}
+                    onDelete={() => handleDelete(holiday.id)}
+                  />
+                ))}
 
                 <TableEmptyRows
                   height={77}

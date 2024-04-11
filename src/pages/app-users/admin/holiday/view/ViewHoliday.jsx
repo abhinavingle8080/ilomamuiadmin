@@ -6,7 +6,7 @@ import { capitalCase } from 'change-case';
 import { Tab, Box, Tabs,  Card, Container,} from '@mui/material';
 
 // sections
-import EmployeeDetails from './EmployeeDetails';
+import HolidayDetails from './HolidayDetails';
 // components
 import Page from '../../../../../components/Page';
 import Iconify from '../../../../../components/iconify';
@@ -27,9 +27,9 @@ export default function ViewGrade({ details, logs }) {
 
   const DETAIL_TABS = [
     {
-      value: 'Employee Details',
+      value: 'Holiday Details',
       // icon: <Iconify icon='akar-icons:info' width={20} height={20} />,
-      component: <EmployeeDetails data={details}/>,
+      component: <HolidayDetails data={details}/>,
     }
   ];
 
